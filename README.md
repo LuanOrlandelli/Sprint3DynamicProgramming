@@ -1,127 +1,106 @@
+# Documentação do Sistema de Controle de Estoque Hospitalar
 
-# Controle de Estoque Hospitalar – Projeto
+Este documento explica os dois códigos do projeto, mostrando como cada estrutura de dados e algoritmo foi aplicado para atender aos requisitos do sistema.
 
-## 1. Código de Consumo Manual com Fila, Pilha, Buscas e Ordenação
+Há dois códigos pois um segue os requisitos propostos na Sprint, e o outro segue a ideia central do projeto (que gera aleatóriamente os dados, os analisa e faz previsões)
 
-Este código simula o registro de consumo diário de insumos hospitalares, permitindo a análise tanto cronológica quanto inversa, além de buscas e ordenação por consumo total.
+---
+## Integrantes
 
-### Produtos
-```python
-produtos = [
-    "reagente_X", "luvas", "máscaras", "seringas", "algodão",
-    "tubos_coleta", "etiquetas", "álcool_gel", "gazes", "papel_laboratorio"
-]
-```
-Lista fixa de produtos utilizados nas unidades.
+* Arthur Bobadilla Franchi – RM555056
+* Luan Orlandelli Ramos – RM554747
+* Arthur Albuquerque Menezes – RM562950
+* Caio Rasuck Barbosa – RM93645
+* Jorge Luiz – RM554418
+
+**Turma:** 2ESPY
+
+---
+
+## 1. Código "Sprint 3 Dynamic Programming"
+
+### Descrição Geral
+
+Este código permite registrar o consumo diário de insumos manualmente, usando listas para simular **fila** e **pilha**. Também implementa **buscas** (sequencial e binária) e **algoritmos de ordenação** (Merge Sort e Quick Sort) para análise dos dados.
 
 ### Estruturas de Dados
 
-#### Fila (FIFO)
-- Implementada com `deque` do Python:
-```python
-fila_consumo = deque()
-```
-- Armazena o consumo diário em ordem cronológica. Cada registro é uma tupla `(produto, quantidade)`.
-- Permite simular o registro do consumo conforme ele ocorre ao longo do tempo.
+* **Lista `fila_consumo`**: simula a fila (FIFO). Os consumos são adicionados ao final da lista e exibidos do início ao fim.
+* **Pilha (LIFO)**: exibida percorrendo a lista do final para o início, simulando comportamento de pilha.
+* **Dicionário `consumo_total`**: armazena a soma total de consumo de cada produto, usado nas ordenações.
 
-#### Pilha (LIFO)
-- Implementada de forma indireta usando `reversed` sobre a fila:
-```python
-for i, (produto, qtd) in enumerate(reversed(list(fila_consumo)), 1):
-```
-- Permite consultar os últimos consumos primeiro, simulando verificações recentes de estoque.
+### Funções e Algoritmos
 
-### Registro de Consumo Manual
-- O usuário insere manualmente a quantidade consumida de cada insumo.
-- Atualiza tanto a fila quanto um dicionário `consumo_total` para armazenamento agregado.
-
-### Estruturas de Busca
-1. **Busca sequencial**
-```python
-def busca_sequencial(produto_alvo):
-    for i, p in enumerate(produtos):
-        if p == produto_alvo:
-            return i
-```
-- Varre a lista de produtos do início ao fim.
-- Útil para listas pequenas ou sem ordenação.
-
-2. **Busca binária**
-```python
-def busca_binaria(produto_alvo):
-    lista_ordenada = sorted(produtos)
-```
-- Requer lista ordenada.
-- Divide a lista repetidamente até localizar o produto.
-- Mais eficiente que a busca sequencial em listas grandes.
-
-### Ordenação por Consumo Total
-1. **Merge Sort**
-```python
-def merge_sort(lista, consumo_total):
-```
-- Ordena produtos por quantidade consumida de forma decrescente.
-- Divide e conquista: divide a lista em sublistas, ordena e junta.
-
-2. **Quick Sort**
-```python
-def quick_sort(lista, consumo_total):
-```
-- Ordena produtos de acordo com consumo total.
-- Escolhe um pivô e separa em maiores e menores.
-- Recursivamente combina para formar a lista ordenada.
+* **`registrar_consumo_manual()`**: solicita ao usuário o produto e a quantidade consumida. Adiciona o registro na fila e atualiza o consumo total.
+* **`mostrar_fila()`**: exibe os consumos na ordem cronológica (FIFO).
+* **`mostrar_pilha()`**: exibe os consumos em ordem inversa (LIFO).
+* **`busca_sequencial(produto)`**: percorre a lista de produtos para localizar o produto alvo.
+* **`busca_binaria(produto)`**: busca eficiente em lista ordenada de produtos.
+* **`merge_sort(lista, consumo_total)`** e **`quick_sort(lista, consumo_total)`**: ordenam os produtos com base no consumo total, do maior para o menor.
 
 ### Menu
-- Permite registrar consumos, visualizar fila/pilha, realizar buscas e ordenações.
+
+O menu permite ao usuário:
+
+1. Registrar consumo diário
+2. Ver consumo em ordem cronológica (fila)
+3. Ver consumo em ordem inversa (pilha)
+4. Buscar produto (sequencial)
+5. Buscar produto (binária)
+6. Ordenar produtos por consumo total (merge sort)
+7. Ordenar produtos por consumo total (quick sort)
+8. Sair
 
 ---
 
-## 2. Código de Previsão de Estoque com Relatórios
+## 2. Código "main"
 
-Este código complementa o anterior, simulando o estoque e o consumo de forma aleatória, mas mantendo conceitos de controle de estoque e previsão de compra.
+### Descrição Geral
 
-### Estoque
-- Cada unidade possui um estoque de produtos com `atual` e `ideal`.
-```python
-estoque[unidade][produto] = {
-    "ideal": ideal,
-    "atual": atual,
-    "valor_unitario": valor_unitario
-}
-```
+Este código simula o estoque de insumos hospitalares, registra consumo aleatório e calcula previsões de compra para os próximos 7 dias. Ele também oferece análises sobre produtos em falta, sobrando e tempo até zerar estoque.
 
-### Consumo Diário
-- Armazenado em dicionário com listas de 7 dias:
-```python
-consumo_diario[produto] = [random.randint(1, 30) for _ in range(7)]
-```
-- Simula histórico de consumo para previsão.
+### Estruturas de Dados
 
-### Previsão de Compra
-- Calcula consumo médio dos últimos 7 dias.
-- Estima o total necessário para manter estoque ideal + consumo futuro.
-- Gera recomendação de compra por produto.
+* **Listas `produtos` e `unidades`**: armazenam os produtos disponíveis e unidades hospitalares.
+* **Dicionário `valores_unitarios`**: armazena o valor unitário de cada produto.
+* **Dicionário `consumo_diario`**: armazena o consumo diário dos últimos 7 dias para cada produto.
+* **Dicionário `estoque`**: armazena o estoque atual e ideal de cada produto por unidade.
+* **Dicionários `faltantes` e `sobrando`**: armazenam produtos que estão abaixo ou acima do estoque ideal.
+* **Função recursiva `dias_para_zerar`**: calcula quantos dias levará para o estoque zerar baseado no consumo passado.
 
-### Estruturas de Busca e Ordenação
-- **Busca sequencial** e **busca binária** para localizar produtos.
-- **Merge Sort** e **Quick Sort** para ordenar produtos por consumo total.
-- Permite análise do consumo e priorização de reposição.
+### Funções e Algoritmos
 
-### Relatórios
-1. **Estoque atual**
-2. **Consumo diário**
-3. **Produtos em falta ou sobrando**
-4. **Dias até zerar o estoque** (`lru_cache` otimiza cálculos recursivos)
-5. **Previsão de compra para 7 dias**
+* **`gerar_consumo_aleatorio()`**: cria dados de consumo para 7 dias de cada produto.
+* **`gerar_estoque_aleatorio()`**: cria dados de estoque ideal e atual para cada unidade e produto.
+* **`produtos_em_falta()` e `produtos_sobrando()`**: identificam produtos fora do estoque ideal.
+* **`previsao_compra()`**: calcula a quantidade recomendada para compra baseado no consumo passado e estoque atual.
+* **`busca_sequencial()` e `busca_binaria()`**: localizam produtos.
+* **`merge_sort()` e `quick_sort()`**: ordenam produtos pelo consumo total.
+* **Funções de exibição**: mostram estoque, consumo diário, produtos em falta/sobrando, dias até zerar e previsão de compra.
 
-### Integração com Fila/Pilha
-- Embora este código gere os dados aleatoriamente, ele pode ser adaptado para usar registros manuais em fila/pilha, unificando os dois sistemas.
+### Menu
+
+O menu permite ao usuário acessar todas as análises, incluindo:
+
+1. Ver estoque
+2. Ver consumo diário dos últimos 7 dias
+3. Busca sequencial por produto
+4. Busca binária por produto
+5. Ordenar produtos por consumo total (merge sort)
+6. Ordenar produtos por consumo total (quick sort)
+7. Produtos em falta e sobrando
+8. Dias até zerar os produtos
+9. Previsão de compra para os próximos 7 dias
+10. Relatório completo
+11. Sair
 
 ---
 
-## 3. Conclusão
+### Observações Finais
 
-- **Fila e Pilha:** simulam registro cronológico e consultas inversas de consumo, atendendo ao requisito de rastreabilidade.
-- **Buscas:** permitem localizar rapidamente produtos em registros históricos ou relatórios.
-- **Ordenação:** permite priorizar insumos mais consumidos para reposição.
-- **Relatórios e previsões:** facilitam decisões de compra e controle de estoque hospitalar.
+* O **primeiro código** atende especificamente aos requisitos de **fila e pilha**, mantendo buscas e ordenações.
+* O **segundo código** é mais completo, simulando todo o sistema de estoque e previsões.
+
+---
+
+Fim da documentação.
